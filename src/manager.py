@@ -36,28 +36,34 @@ class Manager:
         num_consumers = initial_workers
         print('Creating %d consumers' % num_consumers)
         # Todo change to multiprocess.List
-        self.consumers = [Consumer(self.tasks, self.invocation_count, self.logger, timeout=5) for _ in range(num_consumers)]
+        self._consumers = [self._create_consumer() for _ in range(num_consumers)]
 
     def start(self):
-        for w in self.consumers:
+        for w in self._consumers:
             w.start()
 
     def enqueue_task(self, task: Task):
         self.tasks.put(task)
         self.times_enqueued += 1
         if self.get_queue_size() > self.get_running_tasks() * self.INCREMENT_THRESH:
-            self.consumers = [c for c in self.consumers if c.is_alive()]
+            self._cleanup_consumer_list()
             for _ in range(self.AUTOSCALE_AMOUNT):
-                c = Consumer(self.tasks, self.invocation_count, self.logger, timeout=5)
-                self.consumers.append(c)
+                c = self._create_consumer()
+                self._consumers.append(c)
                 c.start()
 
     def get_running_tasks(self):
-        return len([c for c in self.consumers if c.is_alive()])
+        return len([c for c in self._consumers if c.is_alive()])
 
     def get_queue_size(self):
         # In Mac OSX queue.qsize throws NotImplementedError, hence the existence of this function.
         return self.times_enqueued - self.invocation_count.value()
+
+    def _cleanup_consumer_list(self):
+        self._consumers = [c for c in self._consumers if c.is_alive()]
+
+    def _create_consumer(self):
+        return Consumer(self.tasks, self.invocation_count, self.logger, timeout=5)
 
 
 if __name__ == '__main__':
