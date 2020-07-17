@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify
 
 from logger import Logger
@@ -20,8 +21,7 @@ def get_statistics():
 def enqueue_message():
     data = request.get_json()
     manager.enqueue_task(Task(data['message']))
-    return 200
-
+    return 'OK', 200
 
 if __name__ == '__main__':
     manager = Manager(Logger())
