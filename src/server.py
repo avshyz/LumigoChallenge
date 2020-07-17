@@ -24,6 +24,6 @@ def enqueue_message():
     return 'OK', 200
 
 if __name__ == '__main__':
-    manager = Manager(Logger())
+    manager = Manager(logger=Logger('./log.txt'))
     manager.start()
     app.run(port=5000, debug=True)

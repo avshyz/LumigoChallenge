@@ -5,6 +5,7 @@ from logger import Logger
 from task import Task
 
 
+
 class AtomicCounter(object):
     def __init__(self, initval=0):
         self.val = multiprocessing.Value('i', initval)
@@ -26,6 +27,7 @@ class AtomicCounter(object):
 class Manager:
     INCREMENT_THRESH = 5
     AUTOSCALE_AMOUNT = 6
+    TIMEOUT = 5
 
     def __init__(self, logger: Logger, initial_workers=4):
         self.tasks = multiprocessing.Queue()
@@ -65,12 +67,5 @@ class Manager:
         self._consumers = [c for c in self._consumers if c.is_alive()]
 
     def _create_consumer(self):
-        return Consumer(self.tasks, self.invocation_count, self.logger, timeout=5)
+        return Consumer(self.tasks, self.invocation_count, self.logger, timeout=self.TIMEOUT)
 
-
-if __name__ == '__main__':
-    manager = Manager(logger=Logger())
-    manager.start()
-
-    for i in range(10):
-        manager.enqueue_task(Task(i))
