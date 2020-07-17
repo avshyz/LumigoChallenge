@@ -1,17 +1,19 @@
 import multiprocessing
 
 from src.consumer import Consumer
+from src.logger import Logger
 from src.task import Task
 
 
 class Manager:
-    def __init__(self, initial_workers=4):
+    def __init__(self, logger: Logger, initial_workers=4):
         self.tasks = multiprocessing.JoinableQueue()
         self.results = multiprocessing.Queue()
+        self.logger = logger
 
         num_consumers = initial_workers
         print('Creating %d consumers' % num_consumers)
-        self.consumers = [Consumer(self.tasks, self.results) for i in range(num_consumers)]
+        self.consumers = [Consumer(self.tasks, self.results, logger) for i in range(num_consumers)]
 
     def start(self):
         for w in self.consumers:
@@ -22,17 +24,9 @@ class Manager:
 
 
 if __name__ == '__main__':
-    manager = Manager()
+    manager = Manager(logger=Logger())
     manager.start()
 
-    num_jobs = 10
-    for i in range(num_jobs):
+    for i in range(10):
         manager.enqueue_task(Task(i))
 
-    # self.tasks.join()
-
-    # TODO ADD A LOGGER PROCESS HERE, feeding from the results queue
-    while num_jobs:
-        result = manager.results.get()
-        print('Result:', result)
-        num_jobs -= 1
