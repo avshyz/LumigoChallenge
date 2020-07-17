@@ -8,7 +8,7 @@ class Logger:
         self._lock = multiprocessing.Lock()
         self.file_path = file_path
 
-    def log(self, message):
+    def log(self, message: str):
         with self._lock:
             print(f'LOGGER: {message}')
             sys.stdout.flush()

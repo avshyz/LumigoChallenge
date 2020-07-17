@@ -6,7 +6,7 @@ from logger import Logger
 
 class Consumer(multiprocessing.Process):
 
-    def __init__(self, task_queue: multiprocessing.Queue, invocation_count, logger: Logger, timeout=10):
+    def __init__(self, task_queue: multiprocessing.Queue, invocation_count, logger: Logger, timeout: int = 10):
         multiprocessing.Process.__init__(self)
         self.timeout = timeout
         self.task_queue = task_queue
