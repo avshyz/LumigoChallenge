@@ -35,7 +35,9 @@ class Manager:
 
         num_consumers = initial_workers
         print('Creating %d consumers' % num_consumers)
-        # Todo change to multiprocess.List
+        # NOTICE - _consumers require "manual" cleanup, which as of new happens only when new consumers need to be added.
+        # (see `enqueue task), given consumer doesn't hold a lot of data, and I don't foresee this list exceeding in size,
+        # I'm relatively fine with this solution, although I'm aware It's a bit ugly.
         self._consumers = [self._create_consumer() for _ in range(num_consumers)]
 
     def start(self):
