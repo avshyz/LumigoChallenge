@@ -1,7 +1,4 @@
-import sys
 import time
-
-from src.logger import Logger
 
 
 class Task(object):

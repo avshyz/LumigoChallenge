@@ -1,8 +1,8 @@
 import multiprocessing
 
-from src.consumer import Consumer
-from src.logger import Logger
-from src.task import Task
+from consumer import Consumer
+from logger import Logger
+from task import Task
 
 
 class AtomicCounter(object):
@@ -22,6 +22,7 @@ class AtomicCounter(object):
         with self.lock:
             return self.val.value
 
+
 class Manager:
     def __init__(self, logger: Logger, initial_workers=4):
         self.tasks = multiprocessing.Queue()
@@ -30,7 +31,7 @@ class Manager:
 
         num_consumers = initial_workers
         print('Creating %d consumers' % num_consumers)
-        self.consumers = [Consumer(self.tasks, self.invocation_count, logger) for _ in range(num_consumers)]
+        self.consumers = [Consumer(self.tasks, self.invocation_count, logger, timeout=5) for _ in range(num_consumers)]
 
     def start(self):
         for w in self.consumers:
@@ -38,6 +39,9 @@ class Manager:
 
     def enqueue_task(self, task: Task):
         self.tasks.put(task)
+
+    def get_running_tasks(self):
+        return len([c for c in self.consumers if c.is_alive()])
 
 
 if __name__ == '__main__':

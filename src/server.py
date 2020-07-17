@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 
-from src.logger import Logger
-from src.manager import Manager
-from src.task import Task
+from logger import Logger
+from manager import Manager
+from task import Task
 
 app = Flask(__name__)
 manager = None
@@ -11,7 +11,7 @@ manager = None
 @app.route('/statistics', methods=["GET"])
 def get_statistics():
     return jsonify({
-        'active_instances': len([c for c in manager.consumers if c.is_alive()]),
+        'active_instances': manager.get_running_tasks(),
         'total_invocation': manager.invocation_count.value(),
     })
 
