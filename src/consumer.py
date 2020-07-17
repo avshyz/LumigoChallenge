@@ -4,10 +4,9 @@ from queue import Empty
 
 class Consumer(multiprocessing.Process):
 
-    def __init__(self, task_queue: multiprocessing.JoinableQueue, result_queue: multiprocessing.Queue, logger):
+    def __init__(self, task_queue: multiprocessing.JoinableQueue, logger):
         multiprocessing.Process.__init__(self)
         self.task_queue = task_queue
-        self.result_queue = result_queue
         self.logger = logger
 
     def run(self):
@@ -18,7 +17,6 @@ class Consumer(multiprocessing.Process):
                 print(f'{proc_name}: {task}')
                 answer = task(self.logger)
                 self.task_queue.task_done()
-                self.result_queue.put(answer)
             except Empty:
                 print(f"${proc_name}: empty queue, exiting")
                 return

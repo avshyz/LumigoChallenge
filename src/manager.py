@@ -13,7 +13,7 @@ class Manager:
 
         num_consumers = initial_workers
         print('Creating %d consumers' % num_consumers)
-        self.consumers = [Consumer(self.tasks, self.results, logger) for i in range(num_consumers)]
+        self.consumers = [Consumer(self.tasks, logger) for _ in range(num_consumers)]
 
     def start(self):
         for w in self.consumers:
